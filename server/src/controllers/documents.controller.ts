@@ -4,14 +4,18 @@ import { PDFDocument, StandardFonts } from 'pdf-lib';
 import path from 'path';
 import fs from 'fs';
 import archiver from 'archiver';
-import { fileURLToPath } from 'url';
 import type { Request, Response } from 'express';
 import { addTitle, addTableHeaders } from '../utils/pdfUtils.js';
 import { numberToWords } from '../utils/numberToWords.js';
 import { getLegalDate } from '../utils/legalDate.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Resolve the controllers directory anchor: works in both ESM and CommonJS/jest
+// In CommonJS (jest), __dirname is already available natively.
+// In ESM (production), we derive it from process.cwd().
+const _controllersDir: string =
+  typeof __dirname !== 'undefined'
+    ? __dirname
+    : path.resolve(process.cwd(), 'src', 'controllers');
 
 interface Director { name: string; dateElected: string; dateResigned: string; }
 interface Officer { name: string; officeHeld: string; dateAppointed: string; dateResigned: string; }
@@ -240,7 +244,7 @@ const buildShareholdersLedgerPdf = (payload: LedgerPayload = {}): Buffer => {
 const buildShareCertificatePdf = (payload: ShareCertPayload = {}): Buffer => {
   const { certificateNumber, shareholderName, numberOfShares, classOfShares, companyName, issueDate } = payload;
   const numWords = numberToWords(Number(numberOfShares ?? 0));
-  const frameImage = fs.readFileSync(path.resolve(__dirname, '../templates/frame.png'), { encoding: 'base64' });
+  const frameImage = fs.readFileSync(path.resolve(_controllersDir, '../templates/frame.png'), { encoding: 'base64' });
   const doc = new jsPDF();
   doc.addImage(frameImage, 'png', 10, 10, 190, 275);
   doc.setFontSize(10); doc.setFont('helvetica', 'normal');
@@ -346,7 +350,7 @@ const buildBankingResolutionPdf = (payload: BankingPayload = {}): Buffer => {
 };
 
 const buildByLaw1Pdf = async (companyName: string, directorName: string, date: string): Promise<Uint8Array> => {
-  const templateBytes = fs.readFileSync(path.resolve(__dirname, '../templates/bylaw_1.pdf'));
+  const templateBytes = fs.readFileSync(path.resolve(_controllersDir, '../templates/bylaw_1.pdf'));
   const pdfDoc = await PDFDocument.load(templateBytes);
   const form = pdfDoc.getForm();
   const font = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
@@ -370,7 +374,7 @@ const buildByLaw1Pdf = async (companyName: string, directorName: string, date: s
 };
 
 const buildByLaw2Pdf = async (companyName: string, directorName: string, date: string): Promise<Uint8Array> => {
-  const templateBytes = fs.readFileSync(path.resolve(__dirname, '../templates/bylaw_2.pdf'));
+  const templateBytes = fs.readFileSync(path.resolve(_controllersDir, '../templates/bylaw_2.pdf'));
   const pdfDoc = await PDFDocument.load(templateBytes);
   const form = pdfDoc.getForm();
   const font = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
