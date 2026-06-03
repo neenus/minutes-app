@@ -6,7 +6,7 @@ import { jsPDF } from 'jspdf';
 import path from 'path';
 import fs from 'fs';
 import archiver from 'archiver';
-import { addTitle, addTableHeaders, drawVerticalLines, addTableRows } from "./utils/pdfUtils.js";
+import { addTitle, addTableHeaders } from "./utils/pdfUtils.js";
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import dotenv from 'dotenv';
 
