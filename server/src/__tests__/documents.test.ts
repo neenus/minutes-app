@@ -1,5 +1,4 @@
 import request from 'supertest';
-import { app } from '../app';
 
 // Mock requireAuth to simulate unauthenticated
 jest.mock('../middleware/requireAuth', () => ({
@@ -7,6 +6,11 @@ jest.mock('../middleware/requireAuth', () => ({
     res.status(401).json({ success: false, error: 'Not authorized' });
   },
 }));
+
+// Mock documents.routes to use the mock version (avoids loading controller with import.meta)
+jest.mock('../routes/documents.routes', () => require('../__mocks__/documents.routes'));
+
+import { app } from '../app';
 
 describe('Documents routes — unauthenticated', () => {
   const routes = [

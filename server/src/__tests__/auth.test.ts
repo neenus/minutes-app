@@ -1,8 +1,11 @@
 import request from 'supertest';
 import axios from 'axios';
-import { app } from '../app';
 
 jest.mock('axios');
+jest.mock('../routes/documents.routes', () => require('../__mocks__/documents.routes'));
+
+import { app } from '../app';
+
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('POST /api/v1/auth/login', () => {

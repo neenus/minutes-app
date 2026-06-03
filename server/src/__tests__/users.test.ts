@@ -1,10 +1,8 @@
 import request from 'supertest';
 import axios from 'axios';
-import { app } from '../app';
 
 jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-
+jest.mock('../routes/documents.routes', () => require('../__mocks__/documents.routes'));
 jest.mock('../middleware/requireAuth', () => ({
   requireAuth: (req: any, _res: any, next: any) => {
     req.user = {
@@ -14,6 +12,10 @@ jest.mock('../middleware/requireAuth', () => ({
     next();
   },
 }));
+
+import { app } from '../app';
+
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockUsers = [
   { _id: 'u1', email: 'admin@firm.com', firstName: 'Admin', lastName: 'User', role: 'admin' },
