@@ -1,11 +1,10 @@
 import { useSetState } from 'minimal-shared/hooks';
 import { useMemo, useEffect, useCallback } from 'react';
 
-import axios, { endpoints } from 'src/lib/axios';
+import axios from 'src/lib/axios';
 
-import { JWT_STORAGE_KEY } from './constant';
 import { AuthContext } from '../auth-context';
-import { setSession, isValidToken } from './utils';
+import { getStoredToken, isValidToken, setSession } from './utils';
 
 import type { AuthState } from '../../types';
 
@@ -26,16 +25,14 @@ export function AuthProvider({ children }: Props) {
 
   const checkUserSession = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(JWT_STORAGE_KEY);
+      const token = getStoredToken();
 
-      if (accessToken && isValidToken(accessToken)) {
-        setSession(accessToken);
+      if (token && isValidToken(token)) {
+        setSession(token);
 
-        const res = await axios.get(endpoints.auth.me);
+        const user = (axios as any)._nrAuthUser ?? null;
 
-        const { user } = res.data;
-
-        setState({ user: { ...user, accessToken }, loading: false });
+        setState({ user: user ? { ...user, accessToken: token } : null, loading: false });
       } else {
         setState({ user: null, loading: false });
       }
