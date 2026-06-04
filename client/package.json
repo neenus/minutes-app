@@ -2,7 +2,7 @@
   "name": "incorporate-client",
   "author": "Minimals",
   "version": "6.3.0",
-  "description": "Vite Starter & TypeScript",
+  "description": "Minutify — Corporate minute book management",
   "private": true,
   "type": "module",
   "scripts": {
