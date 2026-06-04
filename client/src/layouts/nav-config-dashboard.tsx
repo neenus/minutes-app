@@ -57,10 +57,10 @@ const overviewSection: NavSectionProps['data'][number] = {
   ],
 };
 
-const documentsSection: NavSectionProps['data'][number] = {
-  subheader: 'Documents',
+const companiesSection: NavSectionProps['data'][number] = {
+  subheader: 'Minute Books',
   items: [
-    { title: 'Generate Documents', path: paths.dashboard.documents.generate, icon: ICONS.file },
+    { title: 'Companies', path: paths.dashboard.companies.root, icon: ICONS.file },
   ],
 };
 
@@ -73,5 +73,5 @@ const adminSection: NavSectionProps['data'][number] = {
 
 export const getNavData = (role: string): NavSectionProps['data'] =>
   role === 'admin'
-    ? [overviewSection, documentsSection, adminSection]
-    : [overviewSection, documentsSection];
+    ? [overviewSection, companiesSection, adminSection]
+    : [overviewSection, companiesSection];
