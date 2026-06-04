@@ -5,6 +5,5 @@ dist/
 build/
 .DS_Store
 server/config/secrets.json
-docs/
 .claude/
 .superpowers/
