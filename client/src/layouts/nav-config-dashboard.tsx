@@ -57,6 +57,13 @@ const overviewSection: NavSectionProps['data'][number] = {
   ],
 };
 
+const documentsSection: NavSectionProps['data'][number] = {
+  subheader: 'Documents',
+  items: [
+    { title: 'Generate Documents', path: paths.dashboard.documents.generate, icon: ICONS.file },
+  ],
+};
+
 const adminSection: NavSectionProps['data'][number] = {
   subheader: 'Management',
   items: [
@@ -64,7 +71,9 @@ const adminSection: NavSectionProps['data'][number] = {
   ],
 };
 
-export const navData: NavSectionProps['data'] = [overviewSection, adminSection];
+export const navData: NavSectionProps['data'] = [overviewSection, documentsSection, adminSection];
 
 export const getNavData = (role: string): NavSectionProps['data'] =>
-  role === 'admin' ? [overviewSection, adminSection] : [overviewSection];
+  role === 'admin'
+    ? [overviewSection, documentsSection, adminSection]
+    : [overviewSection, documentsSection];

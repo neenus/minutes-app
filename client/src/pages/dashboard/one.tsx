@@ -1,21 +1,7 @@
-import { Helmet } from 'react-helmet-async';
+import { Navigate } from 'react-router';
 
-import { CONFIG } from 'src/global-config';
-
-import { BlankView } from 'src/sections/blank/view';
-
-// ----------------------------------------------------------------------
-
-const metadata = { title: `Page one | Dashboard - ${CONFIG.appName}` };
+import { paths } from 'src/routes/paths';
 
 export default function Page() {
-  return (
-    <>
-      <Helmet>
-        <title> {metadata.title}</title>
-      </Helmet>
-
-      <BlankView title="Page one" />
-    </>
-  );
+  return <Navigate to={paths.dashboard.documents.generate} replace />;
 }

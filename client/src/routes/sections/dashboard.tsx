@@ -26,6 +26,9 @@ const LazyUserList = lazy(() => import('src/pages/users/list').then((m) => ({ de
 const LazyUserNew = lazy(() => import('src/pages/users/new').then((m) => ({ default: m.UserNewPage })));
 const LazyUserEdit = lazy(() => import('src/pages/users/edit').then((m) => ({ default: m.UserEditPage })));
 const LazyProfile = lazy(() => import('src/pages/profile/index').then((m) => ({ default: m.ProfilePage })));
+const LazyGenerateDocs = lazy(() =>
+  import('src/pages/documents/generate').then((m) => ({ default: m.GenerateDocumentsPage }))
+);
 
 // ----------------------------------------------------------------------
 
@@ -78,6 +81,12 @@ export const dashboardRoutes: RouteObject[] = [
         ],
       },
       { path: 'profile', element: <LazyProfile /> },
+      {
+        path: 'documents',
+        children: [
+          { path: 'generate', element: <LazyGenerateDocs /> },
+        ],
+      },
     ],
   },
 ];

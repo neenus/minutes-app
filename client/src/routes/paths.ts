@@ -56,5 +56,8 @@ export const paths = {
       edit: (id: string) => `${ROOTS.DASHBOARD}/users/${id}/edit`,
     },
     profile: `${ROOTS.DASHBOARD}/profile`,
+    documents: {
+      generate: `${ROOTS.DASHBOARD}/documents/generate`,
+    },
   },
 };

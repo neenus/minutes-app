@@ -69,4 +69,15 @@ export const endpoints = {
     me: '/api/v1/auth/me',
     profile: '/api/v1/auth/profile',
   },
+  documents: {
+    all: '/api/v1/documents/all',
+    directorsRegister: '/api/v1/documents/directors-register',
+    officersRegister: '/api/v1/documents/officers-register',
+    shareholdersRegister: '/api/v1/documents/shareholders-register',
+    shareholdersLedger: '/api/v1/documents/shareholders-ledger',
+    shareCertificate: '/api/v1/documents/share-certificate',
+    bankResolution: '/api/v1/documents/bank-resolution',
+    byLaws: '/api/v1/documents/by-laws',
+    byLaws2: '/api/v1/documents/by-laws-2',
+  },
 };
