@@ -13,7 +13,7 @@ import TableContainer from '@mui/material/TableContainer';
 
 import { Iconify } from 'src/components/iconify';
 
-import type { Director, FormData, Officer, Shareholder } from '../types';
+import type { Officer, Director, FormData, Shareholder } from '../types';
 
 // ----------------------------------------------------------------------
 
