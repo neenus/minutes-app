@@ -41,13 +41,19 @@ type CheckItem = { label: string; ok: boolean };
 
 function useValidation(company: Partial<Company>): CheckItem[] {
   const allLedgerEntries = (company.ledger ?? []).flatMap((l) => l.entries);
+  const allShareholdersHaveLedger = (company.shareholders ?? []).length > 0 &&
+    (company.shareholders ?? []).every((s) =>
+      (company.ledger ?? []).some((l) =>
+        l.shareholderId === s.personId &&
+        l.entries.some((e) => e.type === 'acquired' && parseInt(e.shares, 10) > 0)
+      )
+    );
   return [
     { label: 'Company name and incorporation date entered', ok: !!(company.name && company.incorporationDate) },
     { label: 'At least one director with Date Elected', ok: (company.directors ?? []).some((d) => d.dateElected) },
     { label: 'At least one officer with Office Held', ok: (company.officers ?? []).some((o) => o.officeHeld) },
-    { label: 'At least one shareholder with shares > 0', ok: (company.shareholders ?? []).some((s) => parseInt(s.numberOfShares, 10) > 0) },
+    { label: 'All shareholders have shares recorded in ledger', ok: allShareholdersHaveLedger },
     { label: 'No negative share balances in ledger', ok: !hasNegativeBalance(allLedgerEntries) },
-    { label: 'Bank name entered', ok: !!(company.banking?.bankName) },
   ];
 }
 

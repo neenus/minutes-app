@@ -39,7 +39,7 @@ const STEP_LABELS = [
 function StepIcon({ status }: { status: StepStatus }) {
   if (status === 'complete') return <span style={{ color: '#16a34a' }}>✓</span>;
   if (status === 'partial') return <span style={{ color: '#d97706' }}>⚠</span>;
-  return null;
+  return undefined;
 }
 
 export function GenerateDocumentsPage() {
@@ -129,7 +129,7 @@ export function GenerateDocumentsPage() {
         {STEP_LABELS.map((label, i) => (
           <Step key={label}>
             <StepLabel
-              icon={<StepIcon status={statuses[i]} />}
+              icon={statuses[i] !== 'empty' ? <StepIcon status={statuses[i]} /> : undefined}
               onClick={() => setActiveStep(i)}
               sx={{ cursor: 'pointer' }}
             >

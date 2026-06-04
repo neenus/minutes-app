@@ -20,10 +20,11 @@ import TableContainer from '@mui/material/TableContainer';
 import { Iconify } from 'src/components/iconify';
 
 import {
+  generateId,
   getNextCertNo,
+  getNextTransactionNo,
   hasNegativeBalance,
   recalculateBalances,
-  getNextTransactionNo,
 } from '../types';
 
 import type { Company, LedgerEntry, ShareholderLedger } from '../types';
@@ -56,15 +57,15 @@ export function StepLedger({ data, onChange }: Props) {
         const certNo = getNextCertNo(currentCompany);
         const transactionNo = getNextTransactionNo(currentCompany);
         const firstEntry: LedgerEntry = {
-          _id: crypto.randomUUID(),
+          _id: generateId(),
           date: sh.date,
           certNo,
           transactionNo,
           type: 'acquired',
           toFrom: '',
-          classOfShares: sh.classOfShares,
-          shares: sh.numberOfShares,
-          balance: sh.numberOfShares,
+          classOfShares: '',
+          shares: '',
+          balance: '0',
         };
         const newLedgerEntry: ShareholderLedger = {
           shareholderId: sh.personId,
@@ -94,7 +95,7 @@ export function StepLedger({ data, onChange }: Props) {
   const addEntry = () => {
     const currentCompany = data as Company;
     const newEntry: LedgerEntry = {
-      _id: crypto.randomUUID(),
+      _id: generateId(),
       date: '',
       certNo: getNextCertNo(currentCompany),
       transactionNo: getNextTransactionNo(currentCompany),

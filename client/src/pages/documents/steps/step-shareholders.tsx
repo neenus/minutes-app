@@ -110,22 +110,6 @@ export function StepShareholders({ data, onChange }: Props) {
             sx={{ maxWidth: 220 }}
           />
 
-          <Stack direction="row" spacing={2}>
-            <TextField
-              label="Number of Shares"
-              value={active.numberOfShares}
-              onChange={(e) => updateShareholder(activeTab, { numberOfShares: e.target.value })}
-              placeholder="100"
-              sx={{ flex: 1 }}
-            />
-            <TextField
-              label="Class of Shares"
-              value={active.classOfShares}
-              onChange={(e) => updateShareholder(activeTab, { classOfShares: e.target.value })}
-              placeholder="Common"
-              sx={{ flex: 1 }}
-            />
-          </Stack>
         </Stack>
       )}
 

@@ -119,6 +119,16 @@ export const emptyCompany = (): Omit<Company, '_id' | 'createdBy' | 'updatedBy' 
   ledger: [],
 });
 
+// ─── ID generation (crypto.randomUUID requires HTTPS; this works on HTTP too) ─
+
+export function generateId(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 // ─── Ledger helpers ───────────────────────────────────────────────────────────
 
 export function getNextCertNo(company: Pick<Company, 'ledger' | 'certPrefix'>): string {
@@ -202,7 +212,7 @@ export function stepStatus(company: Partial<Company>): StepStatus[] {
     // Step 1 — Company Info
     company.name && company.incorporationDate ? 'complete' : company.name ? 'partial' : 'empty',
     // Step 2 — Shareholders
-    (company.shareholders?.length ?? 0) > 0 && company.shareholders!.every((s) => s.numberOfShares)
+    (company.shareholders?.length ?? 0) > 0 && company.shareholders!.every((s) => s.date)
       ? 'complete'
       : (company.shareholders?.length ?? 0) > 0
       ? 'partial'
@@ -274,7 +284,17 @@ export function buildPayload(company: Company): AllDocumentsPayload {
       officers: company.officers.map((o) => ({ name: o.person?.name ?? '', officeHeld: o.officeHeld, dateAppointed: o.dateAppointed, dateResigned: o.dateResigned })),
     },
     shareholdersRegister: {
-      shareholders: company.shareholders.map((s) => ({ date: s.date, name: s.person?.name ?? '', sharesHeldNumber: s.numberOfShares, sharesHeldClass: s.classOfShares })),
+      shareholders: company.shareholders.map((s) => {
+        const shLedger = company.ledger.find((l) => l.shareholderId === s.personId);
+        const acquired = (shLedger?.entries ?? []).filter((e) => e.type === 'acquired');
+        const totalShares = acquired.reduce((sum, e) => sum + (parseInt(e.shares, 10) || 0), 0);
+        return {
+          date: s.date,
+          name: s.person?.name ?? '',
+          sharesHeldNumber: totalShares > 0 ? String(totalShares) : '',
+          sharesHeldClass: acquired[0]?.classOfShares ?? '',
+        };
+      }),
     },
     shareholdersLedger: {
       name: primaryPerson?.name ?? '',
@@ -282,7 +302,7 @@ export function buildPayload(company: Company): AllDocumentsPayload {
       city: primaryPerson?.city ?? '',
       province: primaryPerson?.province ?? '',
       postalCode: primaryPerson?.postalCode ?? '',
-      classOfShares: primaryShareholder?.classOfShares ?? '',
+      classOfShares: (primaryLedger?.entries.find((e) => e.type === 'acquired'))?.classOfShares ?? '',
       ledgerEntries: (primaryLedger?.entries ?? []).map((e) => ({
         date: e.date, certificateNo: e.certNo, transactionNo: e.transactionNo,
         toFrom: e.toFrom,
