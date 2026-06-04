@@ -71,8 +71,6 @@ const adminSection: NavSectionProps['data'][number] = {
   ],
 };
 
-export const navData: NavSectionProps['data'] = [overviewSection, documentsSection, adminSection];
-
 export const getNavData = (role: string): NavSectionProps['data'] =>
   role === 'admin'
     ? [overviewSection, documentsSection, adminSection]
