@@ -8,7 +8,8 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
 
-import { AuthGuard } from 'src/auth/guard';
+import { AuthGuard, RoleBasedGuard } from 'src/auth/guard';
+import { useAuthContext } from 'src/auth/hooks';
 
 import { usePathname } from '../hooks';
 
@@ -21,7 +22,21 @@ const PageFour = lazy(() => import('src/pages/dashboard/four'));
 const PageFive = lazy(() => import('src/pages/dashboard/five'));
 const PageSix = lazy(() => import('src/pages/dashboard/six'));
 
+const LazyUserList = lazy(() => import('src/pages/users/list').then((m) => ({ default: m.UserListPage })));
+const LazyUserNew = lazy(() => import('src/pages/users/new').then((m) => ({ default: m.UserNewPage })));
+const LazyUserEdit = lazy(() => import('src/pages/users/edit').then((m) => ({ default: m.UserEditPage })));
+const LazyProfile = lazy(() => import('src/pages/profile/index').then((m) => ({ default: m.ProfilePage })));
+
 // ----------------------------------------------------------------------
+
+function AdminGuarded({ children }: { children: React.ReactNode }) {
+  const { user } = useAuthContext();
+  return (
+    <RoleBasedGuard currentRole={user?.role ?? ''} acceptRoles={['admin']} hasContent>
+      {children}
+    </RoleBasedGuard>
+  );
+}
 
 function SuspenseOutlet() {
   const pathname = usePathname();
@@ -54,6 +69,15 @@ export const dashboardRoutes: RouteObject[] = [
           { path: 'six', element: <PageSix /> },
         ],
       },
+      {
+        path: 'users',
+        children: [
+          { index: true, element: <AdminGuarded><LazyUserList /></AdminGuarded> },
+          { path: 'new', element: <AdminGuarded><LazyUserNew /></AdminGuarded> },
+          { path: ':id/edit', element: <AdminGuarded><LazyUserEdit /></AdminGuarded> },
+        ],
+      },
+      { path: 'profile', element: <LazyProfile /> },
     ],
   },
 ];

@@ -44,39 +44,27 @@ const ICONS = {
 
 // ----------------------------------------------------------------------
 
-export const navData: NavSectionProps['data'] = [
-  /**
-   * Overview
-   */
-  {
-    subheader: 'Overview',
-    items: [
-      {
-        title: 'One',
-        path: paths.dashboard.root,
-        icon: ICONS.dashboard,
-        info: <Label>v{CONFIG.appVersion}</Label>,
-      },
-      { title: 'Two', path: paths.dashboard.two, icon: ICONS.ecommerce },
-      { title: 'Three', path: paths.dashboard.three, icon: ICONS.analytics },
-    ],
-  },
-  /**
-   * Management
-   */
-  {
-    subheader: 'Management',
-    items: [
-      {
-        title: 'Group',
-        path: paths.dashboard.group.root,
-        icon: ICONS.user,
-        children: [
-          { title: 'Four', path: paths.dashboard.group.root },
-          { title: 'Five', path: paths.dashboard.group.five },
-          { title: 'Six', path: paths.dashboard.group.six },
-        ],
-      },
-    ],
-  },
-];
+const overviewSection: NavSectionProps['data'][number] = {
+  subheader: 'Overview',
+  items: [
+    {
+      title: 'Dashboard',
+      path: paths.dashboard.root,
+      icon: ICONS.dashboard,
+      info: <Label>v{CONFIG.appVersion}</Label>,
+    },
+    { title: 'My Profile', path: paths.dashboard.profile, icon: ICONS.lock },
+  ],
+};
+
+const adminSection: NavSectionProps['data'][number] = {
+  subheader: 'Management',
+  items: [
+    { title: 'Users', path: paths.dashboard.users.root, icon: ICONS.user },
+  ],
+};
+
+export const navData: NavSectionProps['data'] = [overviewSection, adminSection];
+
+export const getNavData = (role: string): NavSectionProps['data'] =>
+  role === 'admin' ? [overviewSection, adminSection] : [overviewSection];

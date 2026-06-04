@@ -57,4 +57,16 @@ export const endpoints = {
     details: '/api/product/details',
     search: '/api/product/search',
   },
+  users: {
+    list: '/api/v1/users',
+    create: '/api/v1/users',
+    update: (id: string) => `/api/v1/users/${id}`,
+    delete: (id: string) => `/api/v1/users/${id}`,
+    resendInvite: (id: string) => `/api/v1/users/${id}/resend-invite`,
+  },
+  nrAuth: {
+    login: '/api/v1/auth/login',
+    me: '/api/v1/auth/me',
+    profile: '/api/v1/auth/profile',
+  },
 };
