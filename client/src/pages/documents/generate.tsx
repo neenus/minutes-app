@@ -36,10 +36,10 @@ const STEP_LABELS = [
   'Banking', 'Ledger', 'Certificates', 'Review',
 ];
 
-function StepIcon({ status }: { status: StepStatus }) {
-  if (status === 'complete') return <span style={{ color: '#16a34a' }}>✓</span>;
-  if (status === 'partial') return <span style={{ color: '#d97706' }}>⚠</span>;
-  return undefined;
+function StepStatusBadge({ status }: { status: StepStatus }) {
+  if (status === 'complete') return <Iconify icon="solar:check-circle-bold" sx={{ color: 'success.main', fontSize: 14, ml: 0.5 }} />;
+  if (status === 'partial') return <Iconify icon="solar:danger-bold" sx={{ color: 'warning.main', fontSize: 14, ml: 0.5 }} />;
+  return null;
 }
 
 export function GenerateDocumentsPage() {
@@ -129,11 +129,13 @@ export function GenerateDocumentsPage() {
         {STEP_LABELS.map((label, i) => (
           <Step key={label}>
             <StepLabel
-              icon={statuses[i] !== 'empty' ? <StepIcon status={statuses[i]} /> : undefined}
               onClick={() => setActiveStep(i)}
               sx={{ cursor: 'pointer' }}
             >
-              {label}
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {label}
+                <StepStatusBadge status={statuses[i]} />
+              </Box>
             </StepLabel>
           </Step>
         ))}
