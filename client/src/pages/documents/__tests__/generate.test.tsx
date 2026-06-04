@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
-import { MemoryRouter, Route, Routes } from 'react-router';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { it, vi, expect, describe } from 'vitest';
+import { Route, Routes, MemoryRouter } from 'react-router';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 import { GenerateDocumentsPage } from '../generate';
 

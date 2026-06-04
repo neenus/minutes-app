@@ -22,9 +22,9 @@ import { Iconify } from 'src/components/iconify';
 import {
   generateId,
   getNextCertNo,
-  getNextTransactionNo,
   hasNegativeBalance,
   recalculateBalances,
+  getNextTransactionNo,
 } from '../types';
 
 import type { Company, LedgerEntry, ShareholderLedger } from '../types';

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { it, vi, expect, describe, beforeEach } from 'vitest';
 
 // Use vi.hoisted to define mocks before module hoisting
 const hoisted = vi.hoisted(() => {
@@ -36,7 +36,7 @@ vi.mock('../utils', async () => {
   };
 });
 
-import { signInWithPassword, signOut } from '../action';
+import { signOut, signInWithPassword } from '../action';
 
 beforeEach(() => {
   localStorage.clear();

@@ -12,7 +12,7 @@ export default function Page() {
   return (
     <>
       <Helmet>
-        <title> {metadata.title}</title>
+        <title>{metadata.title}</title>
       </Helmet>
 
       <JwtSignInView />
