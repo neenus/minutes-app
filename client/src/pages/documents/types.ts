@@ -122,11 +122,7 @@ export const emptyCompany = (): Omit<Company, '_id' | 'createdBy' | 'updatedBy' 
 // ─── ID generation (crypto.randomUUID requires HTTPS; this works on HTTP too) ─
 
 export function generateId(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
 }
 
 // ─── Ledger helpers ───────────────────────────────────────────────────────────
