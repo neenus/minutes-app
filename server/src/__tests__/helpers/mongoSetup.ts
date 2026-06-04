@@ -10,12 +10,11 @@ export async function connectTestDb() {
 
 export async function disconnectTestDb() {
   await mongoose.disconnect();
-  await mongod.stop();
+  if (mongod) await mongod.stop();
 }
 
 export async function clearTestDb() {
-  const collections = mongoose.connection.collections;
-  for (const key in collections) {
-    await collections[key].deleteMany({});
-  }
+  await Promise.all(
+    Object.values(mongoose.connection.collections).map((c) => c.deleteMany({}))
+  );
 }
