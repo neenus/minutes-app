@@ -80,4 +80,11 @@ export const endpoints = {
     byLaws: '/api/v1/documents/by-laws',
     byLaws2: '/api/v1/documents/by-laws-2',
   },
+  companies: {
+    root: '/api/v1/companies',
+    byId: (id: string) => `/api/v1/companies/${id}`,
+  },
+  people: {
+    root: '/api/v1/people',
+  },
 };
