@@ -1,29 +1,32 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router';
 
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
+import Step from '@mui/material/Step';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
+import Button from '@mui/material/Button';
 import Stepper from '@mui/material/Stepper';
+import StepLabel from '@mui/material/StepLabel';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 
-import { Iconify } from 'src/components/iconify';
-import { companiesApi } from 'src/lib/companiesApi';
 import { paths } from 'src/routes/paths';
 
-import { StepBanking } from './steps/step-banking';
-import { StepCertificates } from './steps/step-certificates';
-import { StepCompany } from './steps/step-company';
-import { StepDirectors } from './steps/step-directors';
+import { companiesApi } from 'src/lib/companiesApi';
+
+import { Iconify } from 'src/components/iconify';
+
 import { StepLedger } from './steps/step-ledger';
-import { StepOfficers } from './steps/step-officers';
 import { StepReview } from './steps/step-review';
+import { StepCompany } from './steps/step-company';
+import { StepBanking } from './steps/step-banking';
+import { stepStatus, emptyCompany } from './types';
+import { StepOfficers } from './steps/step-officers';
+import { StepDirectors } from './steps/step-directors';
 import { StepShareholders } from './steps/step-shareholders';
-import { emptyCompany, stepStatus } from './types';
+import { StepCertificates } from './steps/step-certificates';
+
 import type { Company, StepStatus } from './types';
 
 // ----------------------------------------------------------------------

@@ -1,21 +1,23 @@
-import { useEffect, useState } from 'react';
+import type { Company } from 'src/pages/documents/types';
+
 import { useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import CardContent from '@mui/material/CardContent';
+import CardActionArea from '@mui/material/CardActionArea';
 
-import { Iconify } from 'src/components/iconify';
-import { companiesApi } from 'src/lib/companiesApi';
 import { paths } from 'src/routes/paths';
 
-import type { Company } from 'src/pages/documents/types';
+import { companiesApi } from 'src/lib/companiesApi';
+
+import { Iconify } from 'src/components/iconify';
 
 export function CompaniesPage() {
   const navigate = useNavigate();
