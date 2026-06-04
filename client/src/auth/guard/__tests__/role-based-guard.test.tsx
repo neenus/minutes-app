@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
 import '@testing-library/jest-dom';
+
+import { it, vi, expect, describe } from 'vitest';
+import { render, screen } from '@testing-library/react';
 
 vi.mock('framer-motion', () => ({
   m: {

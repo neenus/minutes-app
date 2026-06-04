@@ -8,8 +8,8 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
 
-import { AuthGuard, RoleBasedGuard } from 'src/auth/guard';
 import { useAuthContext } from 'src/auth/hooks';
+import { AuthGuard, RoleBasedGuard } from 'src/auth/guard';
 
 import { usePathname } from '../hooks';
 
