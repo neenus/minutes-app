@@ -47,8 +47,8 @@ export function JwtSignInView() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const defaultValues: SignInSchemaType = {
-    email: 'demo@minimals.cc',
-    password: '@2Minimal',
+    email: '',
+    password: '',
   };
 
   const methods = useForm<SignInSchemaType>({
@@ -118,12 +118,6 @@ export function JwtSignInView() {
   return (
     <>
       <FormHead title="Sign in to your account" />
-
-      <Alert severity="info" sx={{ mb: 3 }}>
-        Use <strong>{defaultValues.email}</strong>
-        {' with password '}
-        <strong>{defaultValues.password}</strong>
-      </Alert>
 
       {!!errorMessage && (
         <Alert severity="error" sx={{ mb: 3 }}>
