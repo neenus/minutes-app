@@ -30,7 +30,16 @@ type NrUser = {
   email: string;
   role: string;
   isActive: boolean;
+  invitationStatus: 'invited' | 'accepted' | 'expired';
 };
+
+function getUserStatus(user: NrUser): { label: string; color: 'success' | 'warning' | 'error' | 'default' } {
+  if (user.invitationStatus === 'invited') return { label: 'Invited', color: 'warning' };
+  if (user.invitationStatus === 'expired') return { label: 'Expired', color: 'error' };
+  return user.isActive
+    ? { label: 'Active', color: 'success' }
+    : { label: 'Inactive', color: 'default' };
+}
 
 export function UserListPage() {
   const [users, setUsers] = useState<NrUser[]>([]);
@@ -41,7 +50,7 @@ export function UserListPage() {
     try {
       setLoading(true);
       const res = await axios.get(endpoints.users.list);
-      setUsers(res.data?.data ?? []);
+      setUsers(res.data?.data?.users ?? []);
     } catch {
       setError('Failed to load users.');
     } finally {
@@ -107,11 +116,7 @@ export function UserListPage() {
                     <TableCell>{user.email}</TableCell>
                     <TableCell sx={{ textTransform: 'capitalize' }}>{user.role}</TableCell>
                     <TableCell>
-                      <Chip
-                        size="small"
-                        label={user.isActive ? 'Active' : 'Inactive'}
-                        color={user.isActive ? 'success' : 'default'}
-                      />
+                      {(() => { const s = getUserStatus(user); return <Chip size="small" label={s.label} color={s.color} />; })()}
                     </TableCell>
                     <TableCell align="right">
                       <IconButton

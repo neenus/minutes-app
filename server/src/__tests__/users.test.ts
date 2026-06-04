@@ -18,16 +18,16 @@ import { app } from '../app';
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockUsers = [
-  { _id: 'u1', email: 'admin@firm.com', firstName: 'Admin', lastName: 'User', role: 'admin' },
-  { _id: 'u2', email: 'staff@firm.com', firstName: 'Staff', lastName: 'User', role: 'staff' },
+  { _id: 'u1', email: 'admin@firm.com', firstName: 'Admin', lastName: 'User', role: 'admin', appAccess: ['incorporate-app'] },
+  { _id: 'u2', email: 'staff@firm.com', firstName: 'Staff', lastName: 'User', role: 'staff', appAccess: ['incorporate-app'] },
 ];
 
 describe('GET /api/v1/users', () => {
   it('returns list of users for admin', async () => {
-    mockedAxios.get.mockResolvedValueOnce({ data: { success: true, data: mockUsers } });
+    mockedAxios.get.mockResolvedValueOnce({ data: { success: true, data: { users: mockUsers } } });
     const res = await request(app).get('/api/v1/users').set('Authorization', 'Bearer token');
     expect(res.status).toBe(200);
-    expect(res.body.data).toHaveLength(2);
+    expect(res.body.data.users).toHaveLength(2);
   });
 });
 

@@ -1,10 +1,9 @@
 import { useSetState } from 'minimal-shared/hooks';
 import { useMemo, useEffect, useCallback } from 'react';
 
-import axios from 'src/lib/axios';
-
+import { JWT_USER_KEY } from './constant';
 import { AuthContext } from '../auth-context';
-import { getStoredToken, isValidToken, setSession } from './utils';
+import { setSession, isValidToken, getStoredToken } from './utils';
 
 import type { AuthState } from '../../types';
 
@@ -30,7 +29,8 @@ export function AuthProvider({ children }: Props) {
       if (token && isValidToken(token)) {
         setSession(token);
 
-        const user = (axios as any)._nrAuthUser ?? null;
+        const stored = localStorage.getItem(JWT_USER_KEY);
+        const user = stored ? JSON.parse(stored) : null;
 
         setState({ user: user ? { ...user, accessToken: token } : null, loading: false });
       } else {

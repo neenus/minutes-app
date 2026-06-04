@@ -10,12 +10,15 @@ const actorHeaders = (req: AuthenticatedRequest) => ({
   'X-Actor-ID': req.user?._id,
   'X-Actor-Email': req.user?.email,
   'X-Actor-Name': `${req.user?.firstName ?? ''} ${req.user?.lastName ?? ''}`.trim(),
+  'x-app-name': process.env.APP_NAME,
 });
 
 export const listUsers = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { data } = await axios.get(`${nrAuthUrl()}/api/v1/users`, { headers: { 'X-API-Key': apiKey() } });
-    res.json(data);
+    const { data } = await axios.get(`${nrAuthUrl()}/api/v1/users`, { headers: { 'X-API-Key': apiKey(), 'x-app-name': process.env.APP_NAME } });
+    const allUsers = data?.data?.users ?? [];
+    const appUsers = allUsers.filter((u: any) => Array.isArray(u.appAccess) && u.appAccess.includes(process.env.APP_NAME));
+    res.json({ success: true, data: { users: appUsers } });
   } catch (err: any) {
     res.status(err.response?.status ?? 500).json({ success: false, error: err.response?.data?.error ?? 'Failed to fetch users' });
   }
@@ -23,7 +26,10 @@ export const listUsers = async (req: AuthenticatedRequest, res: Response): Promi
 
 export const createUser = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { data } = await axios.post(`${nrAuthUrl()}/api/v1/users`, req.body, { headers: actorHeaders(req) });
+    const appName = process.env.APP_NAME!;
+    const appAccess = Array.isArray(req.body.appAccess) ? req.body.appAccess : [];
+    const body = { ...req.body, appAccess: [...new Set([...appAccess, appName])] };
+    const { data } = await axios.post(`${nrAuthUrl()}/api/v1/users`, body, { headers: actorHeaders(req) });
     res.status(201).json(data);
   } catch (err: any) {
     res.status(err.response?.status ?? 500).json({ success: false, error: err.response?.data?.error ?? 'Failed to create user' });

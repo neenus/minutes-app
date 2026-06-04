@@ -47,7 +47,7 @@ export function UserEditPage() {
     const fetchUser = async () => {
       try {
         const res = await axios.get(endpoints.users.list);
-        const found = (res.data?.data ?? []).find((u: NrUser) => u._id === id);
+        const found = (res.data?.data?.users ?? []).find((u: NrUser) => u._id === id);
         if (found) {
           setUser(found);
           setForm({ role: found.role, isActive: found.isActive });

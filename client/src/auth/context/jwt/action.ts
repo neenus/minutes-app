@@ -1,6 +1,7 @@
 import axios from 'src/lib/axios';
 
 import { setSession } from './utils';
+import { JWT_USER_KEY } from './constant';
 
 // ----------------------------------------------------------------------
 
@@ -21,7 +22,7 @@ export const signInWithPassword = async ({ email, password }: SignInParams): Pro
   }
 
   setSession(token);
-  (axios as any)._nrAuthUser = user;
+  localStorage.setItem(JWT_USER_KEY, JSON.stringify(user));
 };
 
 /** **************************************
@@ -29,5 +30,5 @@ export const signInWithPassword = async ({ email, password }: SignInParams): Pro
  *************************************** */
 export const signOut = (): void => {
   setSession(null);
-  delete (axios as any)._nrAuthUser;
+  localStorage.removeItem(JWT_USER_KEY);
 };
