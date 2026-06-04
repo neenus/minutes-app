@@ -27,7 +27,7 @@ import { StepDirectors } from './steps/step-directors';
 import { StepShareholders } from './steps/step-shareholders';
 import { StepCertificates } from './steps/step-certificates';
 
-import type { Company, StepStatus } from './types';
+import type { Company } from './types';
 
 // ----------------------------------------------------------------------
 
@@ -36,11 +36,6 @@ const STEP_LABELS = [
   'Banking', 'Ledger', 'Certificates', 'Review',
 ];
 
-function StepStatusBadge({ status }: { status: StepStatus }) {
-  if (status === 'complete') return <Iconify icon="solar:check-circle-bold" sx={{ color: 'success.main', fontSize: 14, ml: 0.5 }} />;
-  if (status === 'partial') return <Iconify icon="solar:danger-bold" sx={{ color: 'warning.main', fontSize: 14, ml: 0.5 }} />;
-  return null;
-}
 
 export function GenerateDocumentsPage() {
   const { id } = useParams<{ id: string }>();
@@ -93,6 +88,13 @@ export function GenerateDocumentsPage() {
 
   const handleBack = () => setActiveStep((s) => Math.max(s - 1, 0));
 
+  const handleStepClick = async (i: number) => {
+    if (companyId && i !== activeStep) {
+      await saveStep(`Navigated to step ${i + 1}`);
+    }
+    setActiveStep(i);
+  };
+
   const statuses = stepStatus(company);
 
   const renderStep = () => {
@@ -129,13 +131,10 @@ export function GenerateDocumentsPage() {
         {STEP_LABELS.map((label, i) => (
           <Step key={label}>
             <StepLabel
-              onClick={() => setActiveStep(i)}
+              onClick={() => handleStepClick(i)}
               sx={{ cursor: 'pointer' }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {label}
-                <StepStatusBadge status={statuses[i]} />
-              </Box>
+              {label}
             </StepLabel>
           </Step>
         ))}

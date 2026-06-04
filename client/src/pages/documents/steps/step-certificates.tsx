@@ -1,16 +1,14 @@
-import { useState } from 'react';
-
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
+import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 
 import { deriveCertificates } from '../types';
 
-import type { Company, DerivedCertificate } from '../types';
+import type { Company } from '../types';
 
 type Props = {
   data: Partial<Company>;
@@ -19,15 +17,7 @@ type Props = {
 
 export function StepCertificates({ data }: Props) {
   const company = data as Company;
-  const [overrides, setOverrides] = useState<Record<string, Partial<DerivedCertificate>>>({});
-
-  const certs = deriveCertificates(company).map((c) => ({
-    ...c,
-    ...(overrides[c.certNo] ?? {}),
-  }));
-
-  const updateCert = (certNo: string, patch: Partial<DerivedCertificate>) =>
-    setOverrides((prev) => ({ ...prev, [certNo]: { ...(prev[certNo] ?? {}), ...patch } }));
+  const certs = deriveCertificates(company);
 
   if (certs.length === 0) {
     return (
@@ -44,7 +34,7 @@ export function StepCertificates({ data }: Props) {
     <Stack spacing={3}>
       <Typography variant="h6">Share Certificates</Typography>
       <Typography variant="body2" color="text.secondary">
-        Auto-generated from acquired ledger entries. All fields are editable for corrections.
+        Auto-generated from the ledger. To make changes, go back to Step 6 — Ledger.
       </Typography>
 
       <Grid container spacing={2}>
@@ -52,59 +42,28 @@ export function StepCertificates({ data }: Props) {
           <Grid item xs={12} sm={6} md={4} key={cert.certNo}>
             <Card variant="outlined">
               <CardContent>
-                <Typography variant="subtitle2" gutterBottom color="primary">
-                  Certificate {cert.certNo}
-                </Typography>
-                <Stack spacing={1.5}>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Company Name</Typography>
-                    <TextField
-                      size="small"
-                      fullWidth
-                      value={cert.companyName}
-                      onChange={(e) => updateCert(cert.certNo, { companyName: e.target.value })}
-                    />
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Shareholder Name</Typography>
-                    <TextField
-                      size="small"
-                      fullWidth
-                      value={cert.shareholderName}
-                      onChange={(e) => updateCert(cert.certNo, { shareholderName: e.target.value })}
-                    />
-                  </Box>
-                  <Stack direction="row" spacing={1}>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="caption" color="text.secondary"># of Shares</Typography>
-                      <TextField
-                        size="small"
-                        fullWidth
-                        value={cert.numberOfShares}
-                        onChange={(e) => updateCert(cert.certNo, { numberOfShares: e.target.value })}
-                      />
-                    </Box>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="caption" color="text.secondary">Class</Typography>
-                      <TextField
-                        size="small"
-                        fullWidth
-                        value={cert.classOfShares}
-                        onChange={(e) => updateCert(cert.certNo, { classOfShares: e.target.value })}
-                      />
-                    </Box>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
+                  <Typography variant="subtitle1" fontWeight="bold">{cert.companyName}</Typography>
+                  <Chip label={cert.certNo} size="small" color="primary" />
+                </Stack>
+                <Divider sx={{ mb: 1.5 }} />
+                <Stack spacing={1}>
+                  <Stack direction="row" justifyContent="space-between">
+                    <Typography variant="body2" color="text.secondary">Shareholder</Typography>
+                    <Typography variant="body2" fontWeight="medium">{cert.shareholderName}</Typography>
                   </Stack>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">Issue Date</Typography>
-                    <TextField
-                      size="small"
-                      fullWidth
-                      type="date"
-                      value={cert.issueDate}
-                      onChange={(e) => updateCert(cert.certNo, { issueDate: e.target.value })}
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Box>
+                  <Stack direction="row" justifyContent="space-between">
+                    <Typography variant="body2" color="text.secondary">Shares</Typography>
+                    <Typography variant="body2" fontWeight="medium">{cert.numberOfShares}</Typography>
+                  </Stack>
+                  <Stack direction="row" justifyContent="space-between">
+                    <Typography variant="body2" color="text.secondary">Class</Typography>
+                    <Typography variant="body2" fontWeight="medium">{cert.classOfShares || '—'}</Typography>
+                  </Stack>
+                  <Stack direction="row" justifyContent="space-between">
+                    <Typography variant="body2" color="text.secondary">Issue Date</Typography>
+                    <Typography variant="body2" fontWeight="medium">{cert.issueDate || '—'}</Typography>
+                  </Stack>
                 </Stack>
               </CardContent>
             </Card>

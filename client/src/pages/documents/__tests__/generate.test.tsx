@@ -25,6 +25,13 @@ vi.mock('src/lib/axios', () => ({
   },
 }));
 
+vi.mock('src/lib/peopleApi', () => ({
+  peopleApi: {
+    search: vi.fn().mockResolvedValue({ data: [] }),
+    create: vi.fn().mockResolvedValue({ data: { _id: 'p1', name: '', streetAddress: '', city: '', province: '', postalCode: '' } }),
+  },
+}));
+
 vi.mock('src/lib/companiesApi', () => ({
   companiesApi: {
     create: vi.fn().mockResolvedValue({
