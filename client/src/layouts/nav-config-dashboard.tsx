@@ -4,7 +4,6 @@ import { paths } from 'src/routes/paths';
 
 import { CONFIG } from 'src/global-config';
 
-import { Label } from 'src/components/label';
 import { SvgColor } from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------
@@ -44,19 +43,6 @@ const ICONS = {
 
 // ----------------------------------------------------------------------
 
-const overviewSection: NavSectionProps['data'][number] = {
-  subheader: 'Overview',
-  items: [
-    {
-      title: 'Dashboard',
-      path: paths.dashboard.root,
-      icon: ICONS.dashboard,
-      info: <Label>v{CONFIG.appVersion}</Label>,
-    },
-    { title: 'My Profile', path: paths.dashboard.profile, icon: ICONS.lock },
-  ],
-};
-
 const companiesSection: NavSectionProps['data'][number] = {
   subheader: 'Minute Books',
   items: [
@@ -73,5 +59,5 @@ const adminSection: NavSectionProps['data'][number] = {
 
 export const getNavData = (role: string): NavSectionProps['data'] =>
   role === 'admin'
-    ? [overviewSection, companiesSection, adminSection]
-    : [overviewSection, companiesSection];
+    ? [companiesSection, adminSection]
+    : [companiesSection];
