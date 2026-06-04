@@ -19,7 +19,7 @@ interface Officer { name: string; officeHeld: string; dateAppointed: string; dat
 interface Shareholder { date: string; name: string; sharesHeldNumber: string; sharesHeldClass: string; }
 interface LedgerEntry {
   date: string; certificateNo: string; transactionNo: string;
-  toFrom: string; transfered: string; acquired: string; sharesBalance: string;
+  toFrom: string; transferred: string; acquired: string; sharesBalance: string;
 }
 interface LedgerPayload {
   ledgerEntries?: LedgerEntry[]; name?: string; streetAddress?: string;
@@ -225,11 +225,11 @@ const buildShareholdersLedgerPdf = (payload: LedgerPayload = {}): Buffer => {
   const totalRows = Math.max(ledgerEntries.length, 18);
   let y = 80;
   for (let i = 0; i < totalRows; i++) {
-    const e = ledgerEntries[i] ?? { date:'',certificateNo:'',transactionNo:'',toFrom:'',transfered:'',acquired:'',sharesBalance:'' };
+    const e = ledgerEntries[i] ?? { date:'',certificateNo:'',transactionNo:'',toFrom:'',transferred:'',acquired:'',sharesBalance:'' };
     doc.setFont('helvetica', 'normal');
     doc.text(e.date ?? '', 15, y - 12); doc.text(e.certificateNo ?? '', 45, y - 12);
     doc.text(e.transactionNo ?? '', 65, y - 12); doc.text(e.toFrom ?? '', 95, y - 12);
-    doc.text(e.transfered ?? '', 135, y - 12); doc.text(e.acquired ?? '', 165, y - 12);
+    doc.text(e.transferred ?? '', 135, y - 12); doc.text(e.acquired ?? '', 165, y - 12);
     doc.text(e.sharesBalance ?? '', 185, y - 12);
     doc.line(10, y - rowHeight, 200, y - rowHeight);
     y += rowHeight;

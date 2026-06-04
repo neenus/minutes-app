@@ -23,7 +23,7 @@ export type LedgerEntry = {
   certificateNo: string;
   transactionNo: string;
   toFrom: string;
-  transfered: string;
+  transferred: string;
   acquired: string;
   sharesBalance: string;
 };
@@ -88,7 +88,7 @@ export const emptyFormData = (): FormData => ({
   officers: [{ name: '', officeHeld: '', dateAppointed: '', dateResigned: '' }],
   shareholders: [{ date: '', name: '', sharesHeldNumber: '', sharesHeldClass: '' }],
   ledgerHolder: { name: '', streetAddress: '', cityAddress: '', provinceAddress: '', postalCode: '', classOfShares: '' },
-  ledgerEntries: [{ date: '', certificateNo: '', transactionNo: '', toFrom: '', transfered: '', acquired: '', sharesBalance: '' }],
+  ledgerEntries: [{ date: '', certificateNo: '', transactionNo: '', toFrom: '', transferred: '', acquired: '', sharesBalance: '' }],
   shareCertificates: [{ certificateNumber: '001', shareholderName: '', numberOfShares: '', classOfShares: '', issueDate: '' }],
 });
 
