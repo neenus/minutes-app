@@ -77,12 +77,14 @@ describe('signInWithPassword', () => {
 });
 
 describe('signOut', () => {
-  it('clears localStorage and axios header', () => {
+  it('calls logout endpoint, clears localStorage and axios header', async () => {
     localStorage.setItem('jwt_access_token', 'some-token');
     hoisted.defaults.headers.common['Authorization'] = 'Bearer some-token';
+    hoisted.post.mockResolvedValueOnce({ data: { success: true } });
 
-    signOut();
+    await signOut();
 
+    expect(hoisted.post).toHaveBeenCalledWith('/api/v1/auth/logout');
     expect(localStorage.getItem('jwt_access_token')).toBeNull();
     expect(hoisted.defaults.headers.common['Authorization']).toBeUndefined();
   });

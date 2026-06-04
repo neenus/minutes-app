@@ -28,7 +28,9 @@ export const signInWithPassword = async ({ email, password }: SignInParams): Pro
 /** **************************************
  * Sign out
  *************************************** */
-export const signOut = (): void => {
+export const signOut = async (): Promise<void> => {
+  // Notify nr-auth so it can log the logout action — fire-and-forget, never block the UI
+  await axios.post('/api/v1/auth/logout').catch(() => {});
   setSession(null);
   localStorage.removeItem(JWT_USER_KEY);
 };
