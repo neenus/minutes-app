@@ -59,5 +59,7 @@ export const Logo = forwardRef<HTMLAnchorElement, LogoProps>((props, ref) => {
 const LogoRoot = styled(Link)(() => ({
   flexShrink: 0,
   display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   verticalAlign: 'middle',
 }));

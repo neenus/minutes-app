@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { SplashScreen } from 'src/components/loading-screen';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -93,7 +94,7 @@ export function UserListPage() {
         </Button>
       </Box>
 
-      {loading && <CircularProgress />}
+      {loading && <SplashScreen slotProps={{ wrapper: { style: { flexDirection: 'row' } } }} />}
       {error && <Typography color="error">{error}</Typography>}
 
       {!loading && !error && (
