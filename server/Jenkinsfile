@@ -7,7 +7,7 @@ pipeline {
 
   environment {
     REGISTRY = '192.168.4.99:5101'
-    IMAGE    = "${REGISTRY}/incorporate-api"
+    IMAGE    = "${REGISTRY}/minutes-api"
   }
 
   stages {
@@ -20,42 +20,52 @@ pipeline {
 
     stage('Install') {
       steps {
-        withCredentials([string(credentialsId: 'npm-private-token', variable: 'NPM_TOKEN')]) {
-          sh 'npm ci'
+        dir('server') {
+          withCredentials([string(credentialsId: 'npm-private-token', variable: 'NPM_TOKEN')]) {
+            sh 'npm ci'
+          }
         }
       }
     }
 
     stage('Type Check') {
-      steps { sh 'npx tsc --noEmit' }
+      steps {
+        dir('server') { sh 'npx tsc --noEmit' }
+      }
     }
 
     stage('Lint') {
       when {
         expression {
           return sh(
-            script: 'node -e "require(\'./package.json\').scripts.lint || process.exit(1)"',
+            script: 'node -e "require(\'./server/package.json\').scripts.lint || process.exit(1)"',
             returnStatus: true
           ) == 0
         }
       }
-      steps { sh 'npm run lint' }
+      steps {
+        dir('server') { sh 'npm run lint' }
+      }
     }
 
     stage('Test') {
-      when { expression { return fileExists('src/__tests__') } }
-      steps { sh 'npm test' }
+      when { expression { return fileExists('server/src/__tests__') } }
+      steps {
+        dir('server') { sh 'npm test' }
+      }
     }
 
     stage('Docker Build & Push') {
       when { branch 'main' }
       steps {
-        withCredentials([string(credentialsId: 'npm-private-token', variable: 'NPM_TOKEN')]) {
-          sh """
-            docker build --build-arg NPM_TOKEN=${NPM_TOKEN} -t ${IMAGE}:${BUILD_NUMBER} -t ${IMAGE}:latest .
-            docker push ${IMAGE}:${BUILD_NUMBER}
-            docker push ${IMAGE}:latest
-          """
+        dir('server') {
+          withCredentials([string(credentialsId: 'npm-private-token', variable: 'NPM_TOKEN')]) {
+            sh """
+              docker build --build-arg NPM_TOKEN=${NPM_TOKEN} -t ${IMAGE}:${BUILD_NUMBER} -t ${IMAGE}:latest .
+              docker push ${IMAGE}:${BUILD_NUMBER}
+              docker push ${IMAGE}:latest
+            """
+          }
         }
       }
     }
@@ -63,7 +73,7 @@ pipeline {
     stage('DB Backup') {
       when { branch 'main' }
       steps {
-        sh 'docker exec incorporate-mongo mongodump --out /backup/pre-deploy-${BUILD_NUMBER} 2>&1 || echo "Backup skipped (container not running yet)"'
+        sh 'docker exec minutes-mongo mongodump --out /backup/pre-deploy-${BUILD_NUMBER} 2>&1 || echo "Backup skipped (container not running yet)"'
       }
     }
 

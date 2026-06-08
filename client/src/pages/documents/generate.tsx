@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Stepper from '@mui/material/Stepper';
 import StepLabel from '@mui/material/StepLabel';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -40,6 +41,7 @@ const STEP_LABELS = [
 export function GenerateDocumentsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const theme = useTheme();
   const isNew = !id;
 
   const [company, setCompany] = useState<Partial<Company>>(emptyCompany());
@@ -129,10 +131,15 @@ export function GenerateDocumentsPage() {
 
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
         {STEP_LABELS.map((label, i) => (
-          <Step key={label}>
+          <Step key={label} completed={statuses[i] === 'complete'}>
             <StepLabel
               onClick={() => handleStepClick(i)}
               sx={{ cursor: 'pointer' }}
+              optional={
+                statuses[i] === 'partial'
+                  ? <Typography variant="caption" sx={{ color: theme.palette.warning.main }}>Incomplete</Typography>
+                  : undefined
+              }
             >
               {label}
             </StepLabel>

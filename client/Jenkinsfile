@@ -7,7 +7,7 @@ pipeline {
 
   environment {
     REGISTRY = '192.168.4.99:5101'
-    IMAGE    = "${REGISTRY}/incorporate-ui"
+    IMAGE    = "${REGISTRY}/minutes-ui"
   }
 
   stages {
@@ -16,41 +16,51 @@ pipeline {
     }
 
     stage('Install') {
-      steps { sh 'npm ci' }
+      steps {
+        dir('client') { sh 'npm ci' }
+      }
     }
 
     stage('Type Check') {
-      steps { sh 'npx tsc --noEmit' }
+      steps {
+        dir('client') { sh 'npx tsc --noEmit' }
+      }
     }
 
     stage('Lint') {
       when {
         expression {
           return sh(
-            script: 'node -e "require(\'./package.json\').scripts.lint || process.exit(1)"',
+            script: 'node -e "require(\'./client/package.json\').scripts.lint || process.exit(1)"',
             returnStatus: true
           ) == 0
         }
       }
-      steps { sh 'npm run lint' }
+      steps {
+        dir('client') { sh 'npm run lint' }
+      }
     }
 
     stage('Test') {
-      when { expression { return fileExists('src/__tests__') } }
-      steps { sh 'npm test' }
+      when { expression { return fileExists('client/src/__tests__') } }
+      steps {
+        dir('client') { sh 'npm test' }
+      }
     }
 
     stage('Docker Build & Push') {
       when { branch 'main' }
       steps {
-        sh """
-          docker build \
-            --build-arg VITE_API_URL=https://minutes-api.nraccounting.ca/api/v1 \
-            -t ${IMAGE}:${BUILD_NUMBER} \
-            -t ${IMAGE}:latest .
-          docker push ${IMAGE}:${BUILD_NUMBER}
-          docker push ${IMAGE}:latest
-        """
+        dir('client') {
+          sh """
+            docker build \
+              --build-arg VITE_API_URL=https://minutes-api.nraccounting.ca/api/v1 \
+              -t ${IMAGE}:${BUILD_NUMBER} \
+              -t ${IMAGE}:latest .
+            docker push ${IMAGE}:${BUILD_NUMBER}
+            docker push ${IMAGE}:latest
+          """
+        }
       }
     }
 
