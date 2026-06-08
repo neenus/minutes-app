@@ -80,7 +80,7 @@ pipeline {
     stage('Deploy') {
       when { branch 'main' }
       steps {
-        build job: 'incorporate-deploy', wait: false
+        build job: 'minutes-deploy', wait: false
       }
     }
   }

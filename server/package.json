@@ -1,5 +1,5 @@
 {
-  "name": "incorporate-backend",
+  "name": "minutes-backend",
   "version": "1.0.0",
   "type": "module",
   "main": "dist/server.js",

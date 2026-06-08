@@ -7,7 +7,7 @@ jest.mock('../middleware/requireAuth', () => ({
   requireAuth: (req: any, _res: any, next: any) => {
     req.user = {
       _id: 'u1', email: 'user@firm.com', firstName: 'John', lastName: 'Doe',
-      role: 'staff', appAccess: ['incorporate-app'], isActive: true,
+      role: 'staff', appAccess: ['minutes-app'], isActive: true,
     };
     next();
   },
@@ -22,7 +22,7 @@ describe('POST /api/v1/auth/login', () => {
     mockedAxios.post.mockResolvedValueOnce({
       data: {
         success: true,
-        data: { token: 'jwt-token', user: { _id: '1', email: 'a@b.com', role: 'admin', firstName: 'A', lastName: 'B', appAccess: ['incorporate-app'], isActive: true } },
+        data: { token: 'jwt-token', user: { _id: '1', email: 'a@b.com', role: 'admin', firstName: 'A', lastName: 'B', appAccess: ['minutes-app'], isActive: true } },
       },
     });
     const res = await request(app).post('/api/v1/auth/login').send({ email: 'a@b.com', password: 'pass' });

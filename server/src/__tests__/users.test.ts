@@ -7,7 +7,7 @@ jest.mock('../middleware/requireAuth', () => ({
   requireAuth: (req: any, _res: any, next: any) => {
     req.user = {
       _id: 'u1', email: 'admin@firm.com', firstName: 'Admin', lastName: 'User',
-      role: 'admin', appAccess: ['incorporate-app'], isActive: true,
+      role: 'admin', appAccess: ['minutes-app'], isActive: true,
     };
     next();
   },
@@ -18,8 +18,8 @@ import { app } from '../app';
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockUsers = [
-  { _id: 'u1', email: 'admin@firm.com', firstName: 'Admin', lastName: 'User', role: 'admin', appAccess: ['incorporate-app'] },
-  { _id: 'u2', email: 'staff@firm.com', firstName: 'Staff', lastName: 'User', role: 'staff', appAccess: ['incorporate-app'] },
+  { _id: 'u1', email: 'admin@firm.com', firstName: 'Admin', lastName: 'User', role: 'admin', appAccess: ['minutes-app'] },
+  { _id: 'u2', email: 'staff@firm.com', firstName: 'Staff', lastName: 'User', role: 'staff', appAccess: ['minutes-app'] },
 ];
 
 describe('GET /api/v1/users', () => {
