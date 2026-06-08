@@ -1,6 +1,6 @@
 services:
   api:
-    image: 192.168.4.99:5101/minutes-api:latest
+    image: 192.168.4.99:5101/minutes-api:${IMAGE_TAG:-latest}
     container_name: minutes-api
     restart: unless-stopped
     ports:
@@ -15,7 +15,7 @@ services:
       - auth_network
 
   ui:
-    image: 192.168.4.99:5101/minutes-ui:latest
+    image: 192.168.4.99:5101/minutes-ui:${IMAGE_TAG:-latest}
     container_name: minutes-ui
     restart: unless-stopped
     ports:
