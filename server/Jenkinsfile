@@ -28,7 +28,7 @@ pipeline {
 
     stage('Type Check') {
       steps {
-        dir('server') { sh 'npx tsc --noEmit' }
+        sh 'npx tsc --noEmit --project server/tsconfig.json'
       }
     }
 
