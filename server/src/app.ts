@@ -10,7 +10,8 @@ import { companiesRouter } from './routes/companies.routes.js';
 dotenv.config({ path: './config/.env' });
 
 export const app = express();
-app.use(cors());
+console.log('CORS allowed origin:', process.env.CLIENT_URL);
+app.use(cors({ origin: process.env.CLIENT_URL }));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/v1/auth', authRouter);

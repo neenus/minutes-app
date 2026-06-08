@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { SplashScreen } from 'src/components/loading-screen';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -13,7 +12,6 @@ import TableHead from '@mui/material/TableHead';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
-import CircularProgress from '@mui/material/CircularProgress';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -21,6 +19,7 @@ import { RouterLink } from 'src/routes/components';
 import axios, { endpoints } from 'src/lib/axios';
 
 import { Iconify } from 'src/components/iconify';
+import { SplashScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 

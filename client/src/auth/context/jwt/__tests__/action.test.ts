@@ -57,7 +57,7 @@ describe('signInWithPassword', () => {
             role: 'admin',
             firstName: 'A',
             lastName: 'B',
-            appAccess: ['incorporate-app'],
+            appAccess: ['minutes-app'],
             isActive: true,
           },
         },

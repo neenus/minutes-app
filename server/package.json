@@ -1,5 +1,5 @@
 {
-  "name": "incorporate-backend",
+  "name": "minutes-backend",
   "version": "1.0.0",
   "type": "module",
   "main": "dist/server.js",
@@ -12,7 +12,7 @@
   "author": "Neenus Gabriel",
   "license": "ISC",
   "dependencies": {
-    "@nr/auth-middleware": "file:../../nr-auth/packages/middleware",
+    "@nr/auth-middleware": "^1.0.0",
     "archiver": "^7.0.1",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
