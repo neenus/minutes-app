@@ -20,10 +20,8 @@ pipeline {
 
     stage('Install') {
       steps {
-        dir('server') {
-          withCredentials([string(credentialsId: 'npm-private-token', variable: 'NPM_TOKEN')]) {
-            sh 'npm ci'
-          }
+        withCredentials([string(credentialsId: 'npm-private-token', variable: 'NPM_TOKEN')]) {
+          sh 'npm ci --workspace=server'
         }
       }
     }
@@ -44,14 +42,14 @@ pipeline {
         }
       }
       steps {
-        dir('server') { sh 'npm run lint' }
+        sh 'npm run lint --workspace=server'
       }
     }
 
     stage('Test') {
       when { expression { return fileExists('server/src/__tests__') } }
       steps {
-        dir('server') { sh 'npm test' }
+        sh 'npm test --workspace=server'
       }
     }
 
