@@ -31,12 +31,6 @@ pipeline {
               exit 1
             }
           '''
-          sh '''
-            test -f "${DEPLOY_DIR}/.env" || {
-              echo "ERROR: ${DEPLOY_DIR}/.env not found. Create it on the NAS before running the pipeline."
-              exit 1
-            }
-          '''
           sh 'docker-compose version > /dev/null 2>&1 || { echo "ERROR: docker-compose plugin not found."; exit 1; }'
         }
       }
