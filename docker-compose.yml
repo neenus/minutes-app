@@ -6,7 +6,7 @@ services:
     ports:
       - "5020:5000"
     env_file:
-      - /volume1/docker/incorporation/.env
+      - /volume1/docker/minutes/.env
     depends_on:
       mongo:
         condition: service_healthy
@@ -34,7 +34,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
-      - /volume1/docker/incorporation/data/mongo:/data/db
+      - /volume1/docker/minutes/data/mongo:/data/db
     healthcheck:
       test:
         - CMD
