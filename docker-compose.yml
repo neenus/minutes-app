@@ -1,28 +1,55 @@
 services:
-  server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+  api:
+    image: 192.168.4.99:5101/minutes-api:latest
+    container_name: minutes-api
+    restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "5020:5000"
     env_file:
-      - ./server/config/.env
-    volumes:
-      - ./server:/usr/src/app
-      - /usr/src/app/node_modules
+      - /volume1/docker/incorporation/.env
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
+    networks:
+      - minutes-net
+      - auth_network
+
+  ui:
+    image: 192.168.4.99:5101/minutes-ui:latest
+    container_name: minutes-ui
+    restart: unless-stopped
+    ports:
+      - "3020:80"
+    networks:
+      - minutes-net
 
   mongo:
-    image: mongo:6.0
-    container_name: mongo
+    image: mongo:7
+    container_name: minutes-mongo
+    restart: unless-stopped
+    command: mongod --auth
     ports:
-      - "27017:27017"
+      - "27020:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
-      - mongo-data:/data/db
+      - /volume1/docker/incorporation/data/mongo:/data/db
+    healthcheck:
+      test:
+        - CMD
+        - mongosh
+        - --eval
+        - "db.adminCommand('ping')"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - minutes-net
 
-volumes:
-  mongo-data:
+networks:
+  minutes-net:
+    driver: bridge
+  auth_network:
+    external: true

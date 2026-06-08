@@ -1,0 +1,69 @@
+pipeline {
+  agent any
+
+  tools {
+    nodejs '22.12.0'
+  }
+
+  environment {
+    REGISTRY = '192.168.4.99:5101'
+    IMAGE    = "${REGISTRY}/incorporate-ui"
+  }
+
+  stages {
+    stage('Checkout') {
+      steps { checkout scm }
+    }
+
+    stage('Install') {
+      steps { sh 'npm ci' }
+    }
+
+    stage('Type Check') {
+      steps { sh 'npx tsc --noEmit' }
+    }
+
+    stage('Lint') {
+      when {
+        expression {
+          return sh(
+            script: 'node -e "require(\'./package.json\').scripts.lint || process.exit(1)"',
+            returnStatus: true
+          ) == 0
+        }
+      }
+      steps { sh 'npm run lint' }
+    }
+
+    stage('Test') {
+      when { expression { return fileExists('src/__tests__') } }
+      steps { sh 'npm test' }
+    }
+
+    stage('Docker Build & Push') {
+      when { branch 'main' }
+      steps {
+        sh """
+          docker build \
+            --build-arg VITE_API_URL=https://minutes-api.nraccounting.ca/api/v1 \
+            -t ${IMAGE}:${BUILD_NUMBER} \
+            -t ${IMAGE}:latest .
+          docker push ${IMAGE}:${BUILD_NUMBER}
+          docker push ${IMAGE}:latest
+        """
+      }
+    }
+
+    stage('Deploy') {
+      when { branch 'main' }
+      steps {
+        build job: 'incorporate-deploy', wait: false
+      }
+    }
+  }
+
+  post {
+    failure { echo 'Pipeline failed — check stage output above.' }
+    success { echo 'Pipeline completed successfully.' }
+  }
+}

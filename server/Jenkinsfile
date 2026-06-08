@@ -1,0 +1,82 @@
+pipeline {
+  agent any
+
+  tools {
+    nodejs '22.12.0'
+  }
+
+  environment {
+    REGISTRY = '192.168.4.99:5101'
+    IMAGE    = "${REGISTRY}/incorporate-api"
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        deleteDir()
+        checkout scm
+      }
+    }
+
+    stage('Install') {
+      steps {
+        withCredentials([string(credentialsId: 'npm-private-token', variable: 'NPM_TOKEN')]) {
+          sh 'npm ci'
+        }
+      }
+    }
+
+    stage('Type Check') {
+      steps { sh 'npx tsc --noEmit' }
+    }
+
+    stage('Lint') {
+      when {
+        expression {
+          return sh(
+            script: 'node -e "require(\'./package.json\').scripts.lint || process.exit(1)"',
+            returnStatus: true
+          ) == 0
+        }
+      }
+      steps { sh 'npm run lint' }
+    }
+
+    stage('Test') {
+      when { expression { return fileExists('src/__tests__') } }
+      steps { sh 'npm test' }
+    }
+
+    stage('Docker Build & Push') {
+      when { branch 'main' }
+      steps {
+        withCredentials([string(credentialsId: 'npm-private-token', variable: 'NPM_TOKEN')]) {
+          sh """
+            docker build --build-arg NPM_TOKEN=${NPM_TOKEN} -t ${IMAGE}:${BUILD_NUMBER} -t ${IMAGE}:latest .
+            docker push ${IMAGE}:${BUILD_NUMBER}
+            docker push ${IMAGE}:latest
+          """
+        }
+      }
+    }
+
+    stage('DB Backup') {
+      when { branch 'main' }
+      steps {
+        sh 'docker exec incorporate-mongo mongodump --out /backup/pre-deploy-${BUILD_NUMBER} 2>&1 || echo "Backup skipped (container not running yet)"'
+      }
+    }
+
+    stage('Deploy') {
+      when { branch 'main' }
+      steps {
+        build job: 'incorporate-deploy', wait: false
+      }
+    }
+  }
+
+  post {
+    failure { echo 'Pipeline failed — check stage output above.' }
+    success { echo 'Pipeline completed successfully.' }
+  }
+}
