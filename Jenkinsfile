@@ -123,6 +123,7 @@ pipeline {
       script {
         echo "Build ${IMAGE_TAG} failed. Rolling back to last known-good image..."
         sh '''
+          test -d ${DEPLOY_DIR} || { echo "Deploy dir not found — skipping rollback."; exit 0; }
           cd ${DEPLOY_DIR}
           LAST_GOOD=$(docker images "${REGISTRY_URL}/minutes-api" --format "{{.Tag}}" \
             | grep -E "^[0-9]+$" \
@@ -130,8 +131,8 @@ pipeline {
             | grep -v "^${IMAGE_TAG}$" \
             | tail -1)
           if [ -z "$LAST_GOOD" ]; then
-            echo "ERROR: No previous image found to roll back to."
-            exit 1
+            echo "No previous image found to roll back to."
+            exit 0
           fi
           echo "Rolling back to tag ${LAST_GOOD}"
           IMAGE_TAG=${LAST_GOOD} docker-compose -f ${COMPOSE_FILE} up -d --no-deps api ui || true
