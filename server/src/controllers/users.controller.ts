@@ -16,9 +16,8 @@ const actorHeaders = (req: AuthenticatedRequest) => ({
 export const listUsers = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { data } = await axios.get(`${nrAuthUrl()}/api/v1/users`, { headers: { 'X-API-Key': apiKey(), 'x-app-name': process.env.APP_NAME } });
-    const allUsers = data?.data?.users ?? [];
-    const appUsers = allUsers.filter((u: any) => Array.isArray(u.appAccess) && u.appAccess.includes(process.env.APP_NAME));
-    res.json({ success: true, data: { users: appUsers } });
+    const users = data?.data?.users ?? [];
+    res.json({ success: true, data: { users } });
   } catch (err: any) {
     res.status(err.response?.status ?? 500).json({ success: false, error: err.response?.data?.error ?? 'Failed to fetch users' });
   }
