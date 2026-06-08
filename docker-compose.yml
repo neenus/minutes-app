@@ -51,5 +51,8 @@ services:
 networks:
   minutes-net:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.20.0/24
   auth_network:
     external: true
