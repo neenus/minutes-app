@@ -17,7 +17,7 @@ pipeline {
 
     stage('Install') {
       steps {
-        dir('client') { sh 'npm ci' }
+        sh 'npm ci --workspace=client'
       }
     }
 
@@ -37,14 +37,14 @@ pipeline {
         }
       }
       steps {
-        dir('client') { sh 'npm run lint' }
+        sh 'npm run lint --workspace=client'
       }
     }
 
     stage('Test') {
       when { expression { return fileExists('client/src/__tests__') } }
       steps {
-        dir('client') { sh 'npm test' }
+        sh 'npm test --workspace=client'
       }
     }
 
