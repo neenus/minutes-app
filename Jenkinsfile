@@ -1,18 +1,12 @@
 pipeline {
   agent any
 
-  tools {
-    nodejs '22.12.0'
-  }
-
   environment {
-    REGISTRY_URL  = credentials('REGISTRY_URL')
-    API_IMAGE     = "${REGISTRY_URL}/minutes-api"
-    UI_IMAGE      = "${REGISTRY_URL}/minutes-ui"
-    IMAGE_TAG     = "${env.BUILD_NUMBER}"
-    DEPLOY_DIR    = '/volume1/docker/minutes'
-    COMPOSE_FILE  = 'docker-compose.yml'
-    VITE_API_URL  = 'https://minutes-api.nraccounting.ca/api/v1'
+    REGISTRY_URL = credentials('REGISTRY_URL')
+    IMAGE_TAG    = "${env.BUILD_NUMBER}"
+    DEPLOY_DIR   = '/volume1/docker/minutes'
+    COMPOSE_FILE = 'docker-compose.yml'
+    VITE_API_URL = 'https://minutes-api.nraccounting.ca/api/v1'
   }
 
   options {
@@ -55,79 +49,47 @@ pipeline {
       }
     }
 
-    stage('Install') {
+    stage('Test') {
       steps {
         withCredentials([string(credentialsId: 'npm-private-token', variable: 'NPM_TOKEN')]) {
-          sh 'npm ci'
+          sh 'docker build --build-arg NPM_TOKEN=$NPM_TOKEN -f Dockerfile.test .'
         }
       }
     }
 
-    stage('CI') {
-      parallel {
-        stage('Server: Type Check') {
-          steps { sh 'npx tsc --noEmit --project server/tsconfig.json' }
-        }
-        stage('Client: Type Check') {
-          steps { sh 'npx tsc --noEmit --project client/tsconfig.json' }
-        }
-        stage('Client: Lint') {
-          steps { sh 'npm run lint --workspace=client' }
-        }
-        stage('Server: Test') {
-          when { expression { return fileExists('server/src/__tests__') } }
-          steps { sh 'npm test --workspace=server' }
-        }
-      }
-    }
-
-    stage('DB Backup') {
+    stage('Build API Image') {
       steps {
-        sh "docker exec minutes-mongo mongodump --out ${DEPLOY_DIR}/backups/pre-deploy-${IMAGE_TAG} 2>&1 || echo 'Backup skipped (container not running yet)'"
+        withCredentials([string(credentialsId: 'npm-private-token', variable: 'NPM_TOKEN')]) {
+          sh 'docker build --build-arg NPM_TOKEN=$NPM_TOKEN -f server/Dockerfile -t ${REGISTRY_URL}/minutes-api:${IMAGE_TAG} -t ${REGISTRY_URL}/minutes-api:latest ./server'
+        }
       }
     }
 
-    stage('Build & Push') {
-      parallel {
-        stage('API Image') {
-          steps {
-            dir('server') {
-              withCredentials([string(credentialsId: 'npm-private-token', variable: 'NPM_TOKEN')]) {
-                sh """
-                  docker build --build-arg NPM_TOKEN=${NPM_TOKEN} \
-                    -t ${API_IMAGE}:${IMAGE_TAG} -t ${API_IMAGE}:latest .
-                  docker push ${API_IMAGE}:${IMAGE_TAG}
-                  docker push ${API_IMAGE}:latest
-                """
-              }
-            }
-          }
-        }
-        stage('UI Image') {
-          steps {
-            dir('client') {
-              sh """
-                docker build --build-arg VITE_API_URL=${VITE_API_URL} \
-                  -t ${UI_IMAGE}:${IMAGE_TAG} -t ${UI_IMAGE}:latest .
-                docker push ${UI_IMAGE}:${IMAGE_TAG}
-                docker push ${UI_IMAGE}:latest
-              """
-            }
-          }
-        }
+    stage('Build UI Image') {
+      steps {
+        sh 'docker build --build-arg VITE_API_URL=${VITE_API_URL} -f client/Dockerfile -t ${REGISTRY_URL}/minutes-ui:${IMAGE_TAG} -t ${REGISTRY_URL}/minutes-ui:latest ./client'
+      }
+    }
+
+    stage('Push') {
+      steps {
+        sh 'docker push ${REGISTRY_URL}/minutes-api:${IMAGE_TAG}'
+        sh 'docker push ${REGISTRY_URL}/minutes-api:latest'
+        sh 'docker push ${REGISTRY_URL}/minutes-ui:${IMAGE_TAG}'
+        sh 'docker push ${REGISTRY_URL}/minutes-ui:latest'
       }
     }
 
     stage('Deploy') {
       steps {
         script {
-          sh "cp ${COMPOSE_FILE} ${DEPLOY_DIR}/${COMPOSE_FILE}"
-          sh """
+          sh 'cp ${COMPOSE_FILE} ${DEPLOY_DIR}/${COMPOSE_FILE}'
+          sh '''
             cd ${DEPLOY_DIR}
             IMAGE_TAG=${IMAGE_TAG} docker-compose -f ${COMPOSE_FILE} up -d mongo
             IMAGE_TAG=${IMAGE_TAG} docker-compose -f ${COMPOSE_FILE} pull api ui
             IMAGE_TAG=${IMAGE_TAG} docker-compose -f ${COMPOSE_FILE} up -d --no-deps api ui
-          """
+          '''
         }
       }
     }
@@ -138,7 +100,7 @@ pipeline {
           retry(12) {
             sleep(time: 5, unit: 'SECONDS')
             sh '''
-              curl -sf "http://localhost:5020/health" > /dev/null || {
+              curl -sf "http://192.168.4.99:5020/health" > /dev/null || {
                 echo "API not ready yet..."
                 exit 1
               }
@@ -147,7 +109,7 @@ pipeline {
           retry(6) {
             sleep(time: 5, unit: 'SECONDS')
             sh '''
-              curl -sf "http://localhost:3020" > /dev/null || {
+              curl -sf "http://192.168.4.99:3020" > /dev/null || {
                 echo "UI not ready yet..."
                 exit 1
               }
@@ -166,34 +128,34 @@ pipeline {
     failure {
       script {
         echo "Build ${IMAGE_TAG} failed. Rolling back to last known-good image..."
-        sh """
+        sh '''
           cd ${DEPLOY_DIR}
-          LAST_GOOD=\$(docker images "${API_IMAGE}" --format "{{.Tag}}" \\
-            | grep -E "^[0-9]+\$" \\
-            | sort -n \\
-            | grep -v "^\${IMAGE_TAG}\$" \\
+          LAST_GOOD=$(docker images "${REGISTRY_URL}/minutes-api" --format "{{.Tag}}" \
+            | grep -E "^[0-9]+$" \
+            | sort -n \
+            | grep -v "^${IMAGE_TAG}$" \
             | tail -1)
-          if [ -z "\$LAST_GOOD" ]; then
+          if [ -z "$LAST_GOOD" ]; then
             echo "ERROR: No previous image found to roll back to."
             exit 1
           fi
-          echo "Rolling back to tag \${LAST_GOOD}"
-          IMAGE_TAG=\${LAST_GOOD} docker-compose -f ${COMPOSE_FILE} up -d --no-deps api ui || true
-        """
+          echo "Rolling back to tag ${LAST_GOOD}"
+          IMAGE_TAG=${LAST_GOOD} docker-compose -f ${COMPOSE_FILE} up -d --no-deps api ui || true
+        '''
       }
     }
     always {
       script {
         sh 'docker image prune -f || true'
-        sh """
-          for img in "${API_IMAGE}" "${UI_IMAGE}"; do
-            docker images "\$img" --format "{{.Tag}}" \\
-              | grep -E "^[0-9]+\$" \\
-              | sort -n \\
-              | head -n -3 \\
-              | xargs -r -I{} docker rmi "\$img:{}" || true
+        sh '''
+          for img in "${REGISTRY_URL}/minutes-api" "${REGISTRY_URL}/minutes-ui"; do
+            docker images "$img" --format "{{.Tag}}" \
+              | grep -E "^[0-9]+$" \
+              | sort -n \
+              | head -n -3 \
+              | xargs -r -I{} docker rmi "$img:{}" || true
           done
-        """
+        '''
       }
     }
   }
