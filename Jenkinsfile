@@ -6,7 +6,6 @@ pipeline {
     IMAGE_TAG    = "${env.BUILD_NUMBER}"
     DEPLOY_DIR   = '/volume1/docker/minutes'
     COMPOSE_FILE = 'docker-compose.yml'
-    VITE_API_URL = 'https://minutes-api.nraccounting.ca/api/v1'
   }
 
   options {
@@ -61,7 +60,8 @@ pipeline {
 
     stage('Build UI Image') {
       steps {
-        sh 'docker build --build-arg VITE_API_URL=${VITE_API_URL} -f client/Dockerfile -t ${REGISTRY_URL}/minutes-ui:${IMAGE_TAG} -t ${REGISTRY_URL}/minutes-ui:latest ./client'
+        sh 'cp ${DEPLOY_DIR}/.env client/.env'
+        sh 'docker build -f client/Dockerfile -t ${REGISTRY_URL}/minutes-ui:${IMAGE_TAG} -t ${REGISTRY_URL}/minutes-ui:latest ./client'
       }
     }
 
