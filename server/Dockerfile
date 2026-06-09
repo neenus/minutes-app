@@ -16,6 +16,5 @@ ARG NPM_TOKEN
 COPY package*.json .npmrc ./
 RUN npm ci --omit=dev && rm -f .npmrc
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/config ./config
 EXPOSE 5000
 CMD ["node", "dist/server.js"]
