@@ -225,8 +225,8 @@ export function stepStatus(company: Partial<Company>): StepStatus[] {
       : (company.officers?.length ?? 0) > 0
       ? 'partial'
       : 'empty',
-    // Step 5 — Banking
-    company.banking?.bankName ? 'complete' : company.banking?.signatories?.length ? 'partial' : 'empty',
+    // Step 5 — Banking (bank name is optional; any data present = complete)
+    company.banking?.bankName || company.banking?.signatories?.length ? 'complete' : 'empty',
     // Step 6 — Ledger
     (company.ledger?.length ?? 0) > 0 && (company.ledger?.every((l) => l.entries.length > 0) ?? false)
       ? 'complete'
