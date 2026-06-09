@@ -3,7 +3,7 @@ import type { Response } from 'express';
 import type { AuthenticatedRequest } from '@nr/auth-middleware';
 
 const nrAuthUrl = () => process.env.AUTH_SERVICE_URL;
-const apiKey = () => process.env.NR_AUTH_API_KEY;
+const apiKey = () => process.env.AUTH_API_KEY;
 
 const actorHeaders = (req: AuthenticatedRequest) => ({
   'X-API-Key': apiKey(),
