@@ -4,7 +4,7 @@ import { app } from './app.js';
 
 dotenv.config({ path: './config/.env' });
 
-mongoose.connect(process.env.MONGO_URI!);
+mongoose.connect(process.env.MONGODB_URI!);
 const db = mongoose.connection;
 db.once('open', () => console.log('Connected to MongoDB'));
 db.on('error', (err) => console.error('MongoDB connection error:', err));
