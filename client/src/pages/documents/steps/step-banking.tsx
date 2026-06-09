@@ -33,7 +33,7 @@ export function StepBanking({ data, onChange }: Props) {
     onChange({ banking: { ...banking, ...patch } });
 
   const addSignatory = () =>
-    setBanking({ signatories: [...banking.signatories, { personId: '', person: people[0] ?? null as any, title: 'Director/Officer' }] });
+    setBanking({ signatories: [...banking.signatories, { personId: '', person: null as any, title: 'Director/Officer' }] });
 
   const updateSignatory = (i: number, patch: Partial<Signatory>) =>
     setBanking({ signatories: banking.signatories.map((s, idx) => (idx === i ? { ...s, ...patch } : s)) });

@@ -50,7 +50,6 @@ export function StepOfficers({ data, onChange }: Props) {
     setActiveTab(Math.min(activeTab, updated.length - 1));
   };
 
-  const alreadyAddedIds = officers.map((o) => o.personId);
   const active = officers[activeTab];
 
   return (
@@ -60,7 +59,7 @@ export function StepOfficers({ data, onChange }: Props) {
       <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1, borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={Math.min(activeTab, Math.max(0, officers.length - 1))} onChange={(_, v) => setActiveTab(v)}>
           {officers.map((o, i) => (
-            <Tab key={o.personId} label={o.person?.name ?? `Officer ${i + 1}`} />
+            <Tab key={i} label={o.person?.name ?? `Officer ${i + 1}`} />
           ))}
         </Tabs>
         <Button size="small" startIcon={<Iconify icon="mingcute:add-line" />} onClick={() => setModalOpen(true)} sx={{ mb: 0.5, ml: 1, whiteSpace: 'nowrap' }}>
@@ -127,7 +126,7 @@ export function StepOfficers({ data, onChange }: Props) {
         onClose={() => setModalOpen(false)}
         onAdd={addOfficer}
         title="Add an Officer"
-        alreadyAddedIds={alreadyAddedIds}
+        alreadyAddedIds={[]}
       />
     </Stack>
   );

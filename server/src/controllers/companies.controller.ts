@@ -57,6 +57,10 @@ export async function updateCompany(req: Request, res: Response) {
     // Strip fields the client must never control
     const { createdBy: _c, _id: _i, __v: _v, _auditSummary, ...safeBody } = req.body;
     const auditSummary = typeof _auditSummary === 'string' ? _auditSummary.slice(0, 200) : 'Updated company';
+    // Filter out incomplete signatories (empty personId would fail ObjectId cast)
+    if (safeBody.banking?.signatories) {
+      safeBody.banking.signatories = safeBody.banking.signatories.filter((s: any) => s.personId);
+    }
     const company = await Company.findByIdAndUpdate(
       req.params.id,
       { ...safeBody, updatedBy: uid },
