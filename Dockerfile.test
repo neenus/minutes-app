@@ -3,15 +3,13 @@ WORKDIR /app
 
 ARG NPM_TOKEN
 
-COPY .npmrc package*.json ./
-COPY server/package.json ./server/
-COPY client/package.json ./client/
+COPY server/.npmrc server/package.json server/package-lock.json ./
+RUN npm ci
 
-RUN npm ci --workspace=server
+ENV MONGOMS_DOWNLOAD_DIR=/app/node_modules/.cache/mongodb-memory-server
+RUN node -e "require('mongodb-memory-server').MongoMemoryServer.create().then(s=>s.stop()).then(()=>process.exit(0)).catch(e=>{console.error(e);process.exit(1)})"
 
-ENV MONGOMS_DOWNLOAD_DIR=/app/server/node_modules/.cache/mongodb-memory-server
-RUN cd server && node -e "require('mongodb-memory-server').MongoMemoryServer.create().then(s=>s.stop()).then(()=>process.exit(0)).catch(e=>{console.error(e);process.exit(1)})"
+COPY server/src ./src
+COPY server/tsconfig.json server/jest.config.cjs server/jest.setup.cjs ./
 
-COPY server/ ./server/
-
-RUN npm test -w server -- --passWithNoTests
+RUN npm test -- --passWithNoTests
